@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "required": true,
+  "min_supported": "1.0.0",
+  "latest": {
+    "version": "1.0.0",
+    "date": "2026-04-09",
+    "changelog": [
+      "Initial auto print feature",
+      "Basic UI popup"
+    ]
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "date": "2026-04-09",
+      "changes": [
+        "Initial auto print feature",
+        "Basic UI popup"
+      ]
+    }
+  ],
+  "download": {
+    "zip": "https://github.com/heladixman/Instant-Print-Orders/archive/refs/heads/main.zip"
+  }
+}

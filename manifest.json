@@ -3,7 +3,7 @@
   "description": "Instant Print Tokopedia & Shopee Orders (© 2026 Hela Dixman, CC BY-NC)",
   "version": "1.0.0",
   "manifest_version": 3,
-  "permissions": ["notifications", "scripting", "activeTab", "commands"],
+  "permissions": ["notifications", "scripting", "activeTab", "commands", "storage"],
   "author": "Hela Dixman",
 
   "icons": {
@@ -26,7 +26,7 @@
   ],
 
   "action": {
-    "default_popup": "pages/index.html"
+    "default_popup": "assets/pages/index.html"
   },
 
   "background": {

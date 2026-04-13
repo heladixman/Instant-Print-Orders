@@ -1,4 +1,4 @@
-# 🖨️ Auto Print Helper (Tokopedia / Shopee)
+# 🖨️ Instant Print Orders (Tokopedia / Shopee)
 
 A browser extension designed to **clean up order pages** and enable **instant printing** with minimal manual effort.
 

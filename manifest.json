@@ -1,7 +1,7 @@
 {
   "name": "Instant Print Orders",
   "description": "Instant Print Tokopedia & Shopee Orders (© 2026 Hela Dixman, CC BY-NC)",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "permissions": ["notifications", "scripting", "activeTab", "commands", "storage"],
   "author": "Hela Dixman",

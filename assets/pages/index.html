@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Instant Print Orders</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div class="container center">
+    <div class="flex no-wrap">
+      <img src="/assets/icons/icon-128.png" alt="icon" srcset="/assets/icons/icon-128.png" class="w-32 pr-4">
+      <h1 class="center">Instant Print Orders</h1>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="shortcuts">Shortcuts</button>
+      <button class="tab-btn" data-tab="changelog">Changelog</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- Shortcuts Tab -->
+    <div id="shortcuts" class="tab-content active">
+      <p class="subtitle center">Use the following shortcuts for quick control</p>
+      
+      <div class="card" id="shortcutsContainer">
+        <!-- Shortcuts loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- Changelog Tab -->
+    <div id="changelog" class="tab-content">
+      <p class="subtitle center">Recent Changes</p>
+      <div class="card">
+        <div id="changelogList" class="changelog-list"></div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settings" class="tab-content">
+      <p class="subtitle center">Settings & Utilities</p>
+      <div class="card" style="margin-top: 12px;">
+        <button id="openShortcutsSettingsBtn" class="btn btn-primary full-width">
+          Open Keyboard Settings
+        </button>
+        <button id="checkUpdateBtn" class="btn btn-primary full-width" style="margin-top: 10px;">Check for Updates</button>
+        <button id="refreshExtensionBtn" class="btn btn-secondary full-width" style="margin-top: 10px;">Refresh Extension</button>
+      </div>
+    </div>
+    
+    <div class="footer flex no-wrap">
+      <p id="meta"></p>
+    </div>
+
+  </div>
+</body>
+<script src="../js/popup.js"></script>
+</html>

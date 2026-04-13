@@ -5,201 +5,169 @@
  */
 
 (function () {
-  console.log("Auto Clean Script Loaded");
-
   const shippingInfo = "1dej3gv";
-
   let isCleaned = false;
+  let isStyleInjected = false;
 
-  async function waitForRender() {
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
+  const wait = async (n = 7) => {
+    for (let i = 0; i < n; i++) await new Promise(requestAnimationFrame);
   }
 
-  async function injectPrintBadge() {
+  const clickAll = (els) =>
+    els.forEach(el => el.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+
+  const clickByText = (selector, openText, closeText, mode) => {
+    const els = [...document.querySelectorAll(selector)];
+
+    if (!mode) {
+      const isOpen = els.some(el => el.textContent.includes(closeText));
+      mode = isOpen ? "close" : "open";
+    }
+
+    const targets = els.filter(el =>
+      el.textContent.includes(mode === "open" ? openText : closeText)
+    );
+
+    clickAll(targets);
+    return wait();
+  };
+
+  async function injectPageHeader() {
     if (document.querySelector('[data-print-clone="badge"]')) return;
 
-    const badges = document.querySelectorAll('[data-tid="m4b_badge"]');
-    const badge = badges[4];
+    const badge = document.querySelectorAll('[data-tid="m4b_badge"]')[4];
+    const invoiceNumber = document.querySelector('.p-page-header-title');
 
-    const target = document.querySelector('.p-page-header-head-extra');
-    
-    Array.from(target.children).forEach(child => {
-      child.classList.add("auto-print-hide");
-      child.setAttribute("data-auto-hidden", "true");
+    const target = document.querySelector('.p-page-header-head');
+    const parent = document.querySelector('.p-page-header-head-main').classList.add("auto-print-hide");
+    if (!badge || !invoiceNumber || !target) return;
+
+    [...target.children].forEach(c => {
+      c.classList.add("auto-print-hide");
+      c.dataset.autoHidden = "true";
     });
 
-    if (!badge || !target) return;
+    const wrapper = document.createElement("div");
+    const badgeClone = badge.cloneNode(true);
+    const invoiceClone = invoiceNumber.cloneNode(true);
 
-    const clone = badge.cloneNode(true);
-    clone.setAttribute("data-print-clone", "badge");
+    wrapper.appendChild(badgeClone);
+    wrapper.appendChild(invoiceClone);
+    wrapper.dataset.printClone = "badge";
 
-    target.appendChild(clone);
+    target.appendChild(wrapper);
   }
 
-  async function removePrintBadge() {
-    document.querySelectorAll('[data-print-clone="badge"]')
-      .forEach(el => el.remove());
-  }
+  const removeBadge = () =>
+    document.querySelectorAll('[data-print-clone="badge"]').forEach(el => el.remove());
 
-  async function hideThirdCard() {
-    const cards = document.querySelectorAll("._card_1a706_6");
-
-    if (cards[2]) {
-      cards[2].classList.add("auto-print-hide");
-      cards[2].setAttribute("data-auto-hidden", "true");
+  async function orderHistory() {
+    const el = document.querySelectorAll("._card_1a706_6")[2];
+    if (el) {
+      el.classList.add("auto-print-hide");
+      el.dataset.autoHidden = "true";
     }
-
-    await waitForRender();
+    await wait();
   }
 
-  async function productDetail(mode) {
-    const elements = [...document.querySelectorAll("div.sc-ccVCaX.jQDyvt")];
-
+  async function customerInformation(mode) {
     if (!mode) {
-      const isOpen = elements.some(el => el.textContent.includes("Sembunyikan"));
-      mode = isOpen ? "close" : "open";
+      mode = document.querySelector('svg[data-log_click_for="close_phone_plaintext"]')
+        ? "close"
+        : "open";
     }
 
-    const targets = elements.filter(el => {
-      const text = el.textContent.trim();
-      return mode === "open"
-        ? text.includes("Tampilkan produk lainnya")
-        : text.includes("Sembunyikan");
-    });
+    const attr = `${mode}_phone_plaintext`;
+    const icons = document.querySelectorAll(`svg[data-log_click_for="${attr}"]`);
 
-    targets.forEach(el => {
-      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    });
-
-    await waitForRender();
-  }
-
-  async function paymentDetail(mode) {
-    const elements = [...document.querySelectorAll("div.cursor-pointer")];
-
-    if (!mode) {
-      const isOpen = elements.some(el =>el.textContent.includes("Sembunyikan Detil"));
-      mode = isOpen ? "close" : "open";
-    }
-
-    const targets = elements.filter(el => {
-      const text = el.textContent.trim();
-      return mode === "open"
-        ? text.includes("Tampilkan Detil")
-        : text.includes("Sembunyikan Detil");
-    });
-
-    targets.forEach(el => {
-      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    });
-
-    await waitForRender();
-  }
-
-  async function toggleData(mode) {
-
-    if (!mode) {
-      const isOpen = !!document.querySelector('svg[data-log_click_for="close_phone_plaintext"]');
-      mode = isOpen ? "close" : "open";
-    }
-
-    const attr =
-      mode === "open"
-        ? "open_phone_plaintext"
-        : "close_phone_plaintext";
-
-    while (true) {
-      const icon = document.querySelector(
-        `svg[data-log_click_for="${attr}"]`
-      );
-
-      if (!icon) {
-        console.log(`Semua ${mode} selesai`);
-        break;
-      }
-
+    for (const icon of [...icons].slice(0, 3)) {
       icon.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-      console.log(`${mode} clicked:`, icon);
-
-      await waitForRender();
+      await wait();
     }
   }
 
-  function injectStyle() {
+  const injectStyle = () => {
     if (document.getElementById("auto-print-style")) return;
+    document.head.insertAdjacentHTML(
+      "beforeend",
+      `<style id="auto-print-style">
+        .auto-print-hide{display:none!important}
+        .p-badge div div .p-space-item span{color: black;}
+        .p-page-header-title{width:auto}
+        div[data-print-clone="badge"] {width:auto;justify-items:right;}
+        .p-page-header-title{width:auto!important}
+        .hidden{visibility:hidden!important}
+        .p-page-header-head{display:block!important}
+        ._image_dgltq_1{width: 100px !important; height: 100px !important;}
+        ._image_dgltq_1 div.p-image{width: 100px !important; height: 100px !important;}
+        .sc-ccVCaX.eiYAtb div{word-break: normal!important;-webkit-line-clamp: 6!important;}
+      </style>`
+    );
+    isStyleInjected = true;
+  };
 
-    const style = document.createElement("style");
-    style.id = "auto-print-style";
-    style.innerHTML = `
-      .auto-print-hide {
-        display: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-  }
+  const removeInjectStyle = () => {
+    const styleEl = document.getElementById("auto-print-style");
+    if (styleEl) {
+      styleEl.remove();
+      isStyleInjected = false;
+    }
+  };
 
   async function autoPrintHide() {
-    await injectPrintBadge();
-    await toggleData();
-    await paymentDetail();
-    await hideThirdCard();
-    await productDetail();
+    await customerInformation();
+    await clickByText("div.cursor-pointer", "Tampilkan Detil", "Sembunyikan Detil", "open");
+    await orderHistory();
+    await injectPageHeader();
+    await clickByText(
+      "div.sc-ccVCaX.jQDyvt",
+      "Tampilkan produk lainnya",
+      "Sembunyikan",
+      "open"
+    );
 
     injectStyle();
-
-    const selectors = [
+    
+    [
       "header",
       "aside",
       "#sidebar-placeholder",
       "div.p-callout.p-callout-info.p-callout-title",
-      `div.p-callout.p-callout-info:where([data-v="${shippingInfo}"])`
-    ];
-
-    selectors.forEach(selector => {
-      document.querySelectorAll(selector).forEach(el => {
-        el.classList.add("auto-print-hide");
-      });
-    });
+      `div.p-callout.p-callout-info[data-v="${shippingInfo}"]`
+    ].forEach(sel =>
+      document.querySelectorAll(sel).forEach(el =>
+        el.classList.add("auto-print-hide")
+      )
+    );
 
     isCleaned = true;
-    console.log("Clean Mode: On");
+    await wait();
+    window.print();
   }
 
   async function restorePage() {
-    await toggleData();
-    await paymentDetail();
-    await productDetail();
-    await removePrintBadge();
-    document.querySelectorAll(".auto-print-hide").forEach(el => {
-      el.classList.remove("auto-print-hide");
-    });
+    await customerInformation();
+    await clickByText("div.cursor-pointer", "Tampilkan Detil", "Sembunyikan Detil");
+    await clickByText("div.sc-ccVCaX.jQDyvt", "Tampilkan produk lainnya", "Sembunyikan");
+    removeBadge();  
+    removeInjectStyle();
+
+    document.querySelectorAll(".auto-print-hide")
+      .forEach(el => el.classList.remove("auto-print-hide"));
 
     isCleaned = false;
-    console.log("Clean Mode: Off");
   }
 
-  async function handleCommand(command) {
-    if (command === "auto-print") {
-      await autoPrintHide();
-      await waitForRender();
-      window.print();
-    }
+  async function detailInformation() {
+    await customerInformation();
+    await clickByText("div.cursor-pointer", "Tampilkan Detil", "Sembunyikan Detil");
+    await clickByText("div.sc-ccVCaX.jQDyvt", "Tampilkan produk lainnya", "Sembunyikan");
+  }
 
-    if (command === "detail-information") {
-      await toggleData();
-      await paymentDetail();
-      await productDetail();
-    }
-
-    if (command === "undo-print") {
-      restorePage();
-    }
+  async function handleCommand(cmd) {
+    if (cmd === "auto-print") await autoPrintHide();
+    if (cmd === "detail-information") await detailInformation();
+    if (cmd === "undo-print") restorePage();
   }
 
   window.autoPrintHandler = handleCommand;

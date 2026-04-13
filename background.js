@@ -39,3 +39,34 @@ function notification() {
     message: "Can only be used on Tokopedia or Shopee Seller Center"
   });
 }
+
+async function checkForUpdate() {
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/heladixman/Instant-Print-Orders/main/version.json");
+    const data = await res.json();
+
+    const currentVersion = chrome.runtime.getManifest().version;
+
+    if (data.version !== currentVersion) {
+      await chrome.storage.local.set({
+        updateAvailable: true,
+        updateData: data
+      });
+
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "/assets/icons/icon-128.png",
+        title: "Update Available",
+        message: `Version ${data.version} available`
+      });
+    }
+  } catch (err) {
+    console.log("Update check failed:", err);
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  checkForUpdate();
+});
+
+setInterval(checkForUpdate, 1000 * 60 * 60 * 6);
